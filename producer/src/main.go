@@ -1,10 +1,17 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"time"
 
 	"gopkg.in/confluentinc/confluent-kafka-go.v1/kafka"
 )
+
+type Payload struct {
+	SensorID string `json:"sensorId"`
+	Content  string `json:"content"`
+}
 
 func main() {
 
@@ -31,11 +38,15 @@ func main() {
 
 	// Produce messages to topic (asynchronously)
 	topic := "myTopicFromGolang"
-	for _, word := range []string{"Welcome", "to", "the", "Confluent", "Kafka", "Golang", "client"} {
+	for _, payload := range []Payload{Payload{SensorID: "AABB", Content: "15"}} {
+		b, _ := json.Marshal(payload)
+
 		p.Produce(&kafka.Message{
 			TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: kafka.PartitionAny},
-			Value:          []byte(word),
+			Value:          b,
 		}, nil)
+		time.Sleep(1 * time.Second)
+
 	}
 
 	// Wait for message deliveries before shutting down
