@@ -37,18 +37,22 @@ func main() {
 	}()
 
 	// Produce messages to topic (asynchronously)
-	topic := "myTopicFromGolang"
-	for _, payload := range []Payload{Payload{SensorID: "AABB", Content: "15"}} {
-		b, _ := json.Marshal(payload)
+	topic := "sensorsTopic"
+	for {
+		for _, payload := range []Payload{Payload{SensorID: "AABB", Content: "15"}} {
+			b, _ := json.Marshal(payload)
 
-		p.Produce(&kafka.Message{
-			TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: kafka.PartitionAny},
-			Value:          b,
-		}, nil)
-		time.Sleep(1 * time.Second)
+			p.Produce(&kafka.Message{
+				TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: kafka.PartitionAny},
+				Value:          b,
+			}, nil)
+			time.Sleep(1 * time.Second)
 
+		}
+
+		p.Flush(15 * 1000)
 	}
 
 	// Wait for message deliveries before shutting down
-	p.Flush(15 * 1000)
+
 }

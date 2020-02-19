@@ -32,3 +32,11 @@ services:
       - zookeeper-server
     volumes:
       - kafka_data:/bitnami
+  kafka-magic:
+    image: digitsy/kafka-magic
+    networks:
+      - kafka-net
+    ports:
+      - 9080:80
+    depends_on:
+      - kafka-server1
